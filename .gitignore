@@ -1,0 +1,35 @@
+# Environment variables - never commit this
+.env
+
+# Maven
+target/
+*.jar
+*.war
+*.class
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# React build
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
