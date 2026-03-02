@@ -4,7 +4,7 @@ import axios from 'axios';
 // const APPOINTMENT_SERVICE = 'http://localhost:8081';
 
 //For Render production
-const USER_SERVICE = 'https://healthcare-management-system-1-v7sb.onrender.com/api';
+const USER_SERVICE = 'https://healthcare-management-system-1-v7sb.onrender.com';
 const APPOINTMENT_SERVICE = 'http://localhost:8081';
 
 const getAuthHeader = () => {
@@ -13,17 +13,11 @@ const getAuthHeader = () => {
 };
 
 // Auth APIs
-// export const registerUser = (data) =>
-  // axios.post(`${USER_SERVICE}/api/auth/register`, data);
+ export const registerUser = (data) =>
+   axios.post(`${USER_SERVICE}/api/auth/register`, data);
 
-// export const loginUser = (data) =>
-  // axios.post(`${USER_SERVICE}/api/auth/login`, data);
-
-export const registerUser = (data) =>
-  axios.post(`${USER_SERVICE}/auth/register`, data); 
-
-export const loginUser = (data) =>
-  axios.post(`${USER_SERVICE}/auth/login`, data); 
+ export const loginUser = (data) =>
+   axios.post(`${USER_SERVICE}/api/auth/login`, data); 
 
 export const getDoctors = () =>
   axios.get(`${USER_SERVICE}/api/users/doctors`, { headers: getAuthHeader() });
