@@ -1,29 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Paper, Typography, Button, TextField, Box,
-         Alert, Card, CardContent, Chip, Grid } from '@mui/material';
-import { createAppointment, getPatientAppointments } from '../services/api';
+         Alert, Card, CardContent, Chip, MenuItem, Select,
+         FormControl, InputLabel } from '@mui/material';
+import { createAppointment, getPatientAppointments, getDoctors } from '../services/api';
 
 function PatientDashboard() {
   const user = JSON.parse(localStorage.getItem('user'));
   const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [form, setForm] = useState({ doctorId: '', doctorEmail: '', appointmentDateTime: '', reason: '', notes: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
   const loadAppointments = useCallback(async () => {
     try {
-      const response = await getPatientAppointments(user.id || 1);
+      const response = await getPatientAppointments(user.id);
       setAppointments(response.data);
     } catch (err) {
       console.error('Failed to load appointments');
     }
   }, [user.id]);
 
+  const loadDoctors = useCallback(async () => {
+    try {
+      const response = await getDoctors();
+      setDoctors(response.data);
+    } catch (err) {
+      console.error('Failed to load doctors');
+    }
+  }, []);
+
   useEffect(() => {
     loadAppointments();
-  }, [loadAppointments]);
+    loadDoctors();
+  }, [loadAppointments, loadDoctors]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleDoctorSelect = (e) => {
+    const selectedDoctor = doctors.find(d => d.id === e.target.value);
+    if (selectedDoctor) {
+      setForm({ ...form, doctorId: selectedDoctor.id, doctorEmail: selectedDoctor.email });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +50,7 @@ function PatientDashboard() {
     setMessage('');
     try {
       await createAppointment({
-        patientId: user.id || 1,
+        patientId: user.id,
         patientEmail: user.email,
         doctorId: parseInt(form.doctorId),
         doctorEmail: form.doctorEmail,
@@ -61,44 +80,85 @@ function PatientDashboard() {
         Welcome, {user?.name}!
       </Typography>
 
-      {/* Book Appointment Form */}
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h6" gutterBottom fontWeight="bold">
           Book New Appointment
         </Typography>
         {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        <Box component="form" onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Doctor ID" name="doctorId"
-                value={form.doctorId} onChange={handleChange} required />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField fullWidth label="Doctor Email" name="doctorEmail"
-                value={form.doctorEmail} onChange={handleChange} required />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label="Appointment Date & Time" name="appointmentDateTime"
-                type="datetime-local" value={form.appointmentDateTime}
-                onChange={handleChange} InputLabelProps={{ shrink: true }} required />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label="Reason" name="reason"
-                value={form.reason} onChange={handleChange} required />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth label="Notes" name="notes" multiline rows={2}
-                value={form.notes} onChange={handleChange} />
-            </Grid>
-          </Grid>
-          <Button variant="contained" type="submit" sx={{ mt: 2 }}>
+
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+          <FormControl fullWidth required>
+            <InputLabel id="doctor-label">Select Doctor</InputLabel>
+            <Select
+              labelId="doctor-label"
+              value={form.doctorId}
+              label="Select Doctor"
+              onChange={handleDoctorSelect}
+              renderValue={(selected) => {
+                const doctor = doctors.find(d => d.id === selected);
+                return doctor ? `Dr. ${doctor.name}${doctor.specialization ? ` — ${doctor.specialization}` : ''}` : '';
+              }}
+            >
+              {doctors.length === 0 ? (
+                <MenuItem disabled>No doctors available</MenuItem>
+              ) : (
+                doctors.map(doctor => (
+                  <MenuItem key={doctor.id} value={doctor.id}>
+                    <Box>
+                      <Typography variant="body1" fontWeight="medium">
+                        Dr. {doctor.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {doctor.specialization || 'General'} • {doctor.email}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))
+              )}
+            </Select>
+          </FormControl>
+
+          <TextField
+            fullWidth
+            label="Appointment Date & Time"
+            name="appointmentDateTime"
+            type="datetime-local"
+            value={form.appointmentDateTime}
+            onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
+            required
+          />
+
+          <TextField
+            fullWidth
+            label="Reason for Visit"
+            name="reason"
+            value={form.reason}
+            onChange={handleChange}
+            required
+            placeholder="e.g. Regular checkup, Fever, Follow-up"
+          />
+
+          <TextField
+            fullWidth
+            label="Additional Notes (optional)"
+            name="notes"
+            multiline
+            rows={2}
+            value={form.notes}
+            onChange={handleChange}
+            placeholder="Any additional information for the doctor"
+          />
+
+          <Button variant="contained" type="submit" size="large" sx={{ mt: 1 }}>
             Book Appointment
           </Button>
+
         </Box>
       </Paper>
 
-      {/* Appointments List */}
       <Typography variant="h6" gutterBottom fontWeight="bold">
         My Appointments
       </Typography>
@@ -108,13 +168,14 @@ function PatientDashboard() {
         appointments.map(apt => (
           <Card key={apt.id} sx={{ mb: 2 }}>
             <CardContent>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Typography variant="h6">Appointment #{apt.id}</Typography>
                 <Chip label={apt.status} color={getStatusColor(apt.status)} />
               </Box>
-              <Typography>Doctor: {apt.doctorEmail}</Typography>
-              <Typography>Date: {new Date(apt.appointmentDateTime).toLocaleString()}</Typography>
-              <Typography>Reason: {apt.reason}</Typography>
+              <Typography><strong>Doctor:</strong> {apt.doctorEmail}</Typography>
+              <Typography><strong>Date:</strong> {new Date(apt.appointmentDateTime).toLocaleString()}</Typography>
+              <Typography><strong>Reason:</strong> {apt.reason}</Typography>
+              {apt.notes && <Typography color="text.secondary"><strong>Notes:</strong> {apt.notes}</Typography>}
             </CardContent>
           </Card>
         ))

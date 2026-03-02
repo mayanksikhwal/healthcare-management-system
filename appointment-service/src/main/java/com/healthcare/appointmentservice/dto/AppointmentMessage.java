@@ -1,8 +1,7 @@
 package com.healthcare.appointmentservice.dto;
 
 import lombok.*;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +12,7 @@ public class AppointmentMessage {
     private String patientEmail;
     private String doctorEmail;
 
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm") 
     private LocalDateTime appointmentDateTime;
 
     private String reason;

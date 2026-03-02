@@ -10,7 +10,7 @@ function DoctorDashboard() {
 
   const loadAppointments = useCallback(async () => {
     try {
-      const response = await getDoctorAppointments(user.id || 2);
+      const response = await getDoctorAppointments(user.id);
       setAppointments(response.data);
     } catch (err) {
       console.error('Failed to load appointments');
@@ -44,9 +44,7 @@ function DoctorDashboard() {
       <Typography variant="subtitle1" gutterBottom color="text.secondary">
         Welcome, Dr. {user?.name}!
       </Typography>
-
       {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
-
       <Typography variant="h6" gutterBottom fontWeight="bold">
         My Appointments
       </Typography>
@@ -63,6 +61,7 @@ function DoctorDashboard() {
               <Typography>Patient: {apt.patientEmail}</Typography>
               <Typography>Date: {new Date(apt.appointmentDateTime).toLocaleString()}</Typography>
               <Typography>Reason: {apt.reason}</Typography>
+              {apt.notes && <Typography color="text.secondary">Notes: {apt.notes}</Typography>}
               {apt.status === 'PENDING' && (
                 <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                   <Button variant="contained" color="success" size="small"

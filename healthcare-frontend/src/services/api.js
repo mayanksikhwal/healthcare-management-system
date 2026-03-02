@@ -15,6 +15,9 @@ export const registerUser = (data) =>
 export const loginUser = (data) =>
   axios.post(`${USER_SERVICE}/api/auth/login`, data);
 
+export const getDoctors = () =>
+  axios.get(`${USER_SERVICE}/api/users/doctors`, { headers: getAuthHeader() });
+
 // Appointment APIs
 export const createAppointment = (data) =>
   axios.post(`${APPOINTMENT_SERVICE}/api/appointments`, data, { headers: getAuthHeader() });
