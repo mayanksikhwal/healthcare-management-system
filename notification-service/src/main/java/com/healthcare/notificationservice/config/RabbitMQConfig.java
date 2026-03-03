@@ -7,8 +7,8 @@ import org.springframework.amqp.support.converter.*;
 import org.springframework.context.annotation.*;
 
 @Configuration
+@ConditionalOnProperty(name = "app.rabbitmq.enabled", havingValue = "true", matchIfMissing = false) 
 public class RabbitMQConfig {
-
     public static final String QUEUE = "appointment.queue";
     public static final String EXCHANGE = "appointment.exchange";
     public static final String ROUTING_KEY = "appointment.routingkey";
