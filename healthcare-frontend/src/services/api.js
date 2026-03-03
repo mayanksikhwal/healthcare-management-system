@@ -5,7 +5,7 @@ import axios from 'axios';
 
 //For Render production
 const USER_SERVICE = 'https://healthcare-management-system-1-v7sb.onrender.com';
-const APPOINTMENT_SERVICE = 'http://localhost:8081';
+const APPOINTMENT_SERVICE = 'https://healthcare-management-system-2-bf6s.onrender.com'; 
 
 const getAuthHeader = () => {
   const token = localStorage.getItem('token');
