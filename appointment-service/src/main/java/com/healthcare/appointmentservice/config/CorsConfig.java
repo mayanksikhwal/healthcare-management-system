@@ -9,7 +9,10 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
+		// for local system
+                // .allowedOrigins("http://localhost:3000")
+		// For Render Production
+		.allowedOrigins("https://healthcare-management-system-2-bf6s.onrender.com") 
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
