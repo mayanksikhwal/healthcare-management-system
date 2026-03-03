@@ -43,7 +43,8 @@ public class SecurityConfig {
                     "/api-docs/**",
                     "/swagger-resources/**",
                     "/webjars/**",
-                    "/api/health"  // Health endpoint public
+                    "/api/health", 
+		    "/api/notifications/email"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
