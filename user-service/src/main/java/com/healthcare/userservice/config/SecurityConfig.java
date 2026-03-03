@@ -34,6 +34,7 @@ public class SecurityConfig {
 	// For local system
         // config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
 	// For Render Deployment
+	config.setAllowedOrigins(Arrays.asList("https://healthcare-management-system-ekrz.onrender.com"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
