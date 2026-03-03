@@ -11,8 +11,8 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
 		// for local system
                 // .allowedOrigins("http://localhost:3000")
-		// For Render Production
-		.allowedOrigins("https://healthcare-management-system-2-bf6s.onrender.com") 
+		// For Render Production (FE)
+		.allowedOrigins("https://healthcare-management-system-ekrz.onrender.com") 
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
