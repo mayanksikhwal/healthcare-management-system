@@ -44,7 +44,7 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**",
                     "/api/health", 
-		    "/api/notifications/email"
+		    "/api/notifications/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
