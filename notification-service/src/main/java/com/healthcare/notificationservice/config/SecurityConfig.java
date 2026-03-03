@@ -9,7 +9,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,14 +18,13 @@ public class SecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-    	CorsConfiguration config = new CorsConfiguration();
-    	config.setAllowedOrigins(Arrays.asList(
-        	"https://healthcare-management-system-ekrz.onrender.com",  // Frontend
-        	"https://healthcare-management-system-3-cpcw.onrender.com", // Swagger  
-        	"http://localhost:3000", "https://localhost:3000"          // Local dev
-    ));  
-	// ← Remove comments inside Arrays.asList()
-    	config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(
+            "https://healthcare-management-system-ekrz.onrender.com",
+            "https://healthcare-management-system-3-cpcw.onrender.com",
+            "http://localhost:3000", "https://localhost:3000"
+        ));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -40,21 +38,11 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/swagger-ui/**",
-                    "/swagger-ui.html", 
-                    "/v3/api-docs/**",
-                    "/v3/api-docs",
-                    "/api-docs/**",
-                    "/swagger-resources/**",
-                    "/webjars/**",
-                    "/api/health", 
-		    "/api/notifications/**"
-                ).permitAll()
+                .requestMatchers("/api/notifications/**", "/api/health", 
+                    "/swagger-ui/**", "/v3/api-docs/**", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         return http.build();
     }
 }
