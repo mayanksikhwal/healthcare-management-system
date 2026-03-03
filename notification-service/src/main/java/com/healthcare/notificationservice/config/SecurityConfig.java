@@ -19,9 +19,14 @@ public class SecurityConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("https://healthcare-management-system-ekrz.onrender.com"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    	CorsConfiguration config = new CorsConfiguration();
+    	config.setAllowedOrigins(Arrays.asList(
+        	"https://healthcare-management-system-ekrz.onrender.com",  // Frontend
+        	"https://healthcare-management-system-3-cpcw.onrender.com", // Swagger  
+        	"http://localhost:3000", "https://localhost:3000"          // Local dev
+    ));  
+	// ← Remove comments inside Arrays.asList()
+    	config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
