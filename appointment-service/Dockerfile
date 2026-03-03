@@ -1,5 +1,4 @@
 # For Render Production
-
 FROM eclipse-temurin:17-jdk-alpine AS builder 
 WORKDIR /app
 
@@ -15,7 +14,13 @@ RUN mvn clean package -DskipTests
 # Production runtime (smaller image)
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
+
+# Render H2 in-memory database 
+ENV SPRING_DATASOURCE_URL=jdbc:h2:mem:appointments
+ENV SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
+ENV SPRING_H2_CONSOLE_ENABLED=true
+
 COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8081
-ENTRYPOINT ["java", "-XX:InitialRAMPercentage=75.0", "-jar", "app.jar"]
+EXPOSE ${PORT:-8081}
+ENTRYPOINT ["sh", "-c", "java -XX:InitialRAMPercentage=75.0 -Dserver.port=$PORT -jar app.jar"]
 
