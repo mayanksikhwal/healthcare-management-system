@@ -21,5 +21,5 @@ ENV SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop
 ENV SPRING_H2_CONSOLE_ENABLED=true
 
 COPY --from=builder /app/target/*.jar app.jar
-EXPOSE $(PORT:-8080)
-ENTRYPOINT ["sh", "-c", "java -XX:InitialRAMPercentage=75.0 -Dserver.port=$PORT -jar app.jar"]
+EXPOSE 8080
+ENTRYPOINT ["sh", "-c", "java -XX:InitialRAMPercentage=75.0 -Dserver.port=${PORT:-8080} -jar app.jar"]
