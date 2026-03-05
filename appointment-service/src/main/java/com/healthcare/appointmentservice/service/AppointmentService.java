@@ -84,6 +84,7 @@ public class AppointmentService {
     }
 
     private AppointmentResponse mapToResponse(Appointment a) {
+	String doctorName = "Dr. " + a.getDoctorName();
         return AppointmentResponse.builder()
                 .id(a.getId())
                 .patientId(a.getPatientId())
