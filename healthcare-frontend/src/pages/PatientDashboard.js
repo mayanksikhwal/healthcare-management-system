@@ -120,6 +120,12 @@ function PatientDashboard() {
               )}
             </Select>
           </FormControl>
+	  
+	  {
+	  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+  	  	Debug: {JSON.stringify({doctorId: form.doctorId, doctorEmail: form.doctorEmail, doctorName: form.doctorName})}
+	  </Typography>
+	  }
 
           <TextField
             fullWidth
