@@ -8,6 +8,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile("local")
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationListener {

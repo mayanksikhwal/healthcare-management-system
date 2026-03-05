@@ -1,38 +1,50 @@
 package com.healthcare.notificationservice.service;
 
-import com.healthcare.notificationservice.dto.AppointmentMessage;
-import lombok.RequiredArgsConstructor;
+import com.sendgrid.*;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.healthcare.notificationservice.dto.AppointmentMessage;  // ADD THIS IMPORT
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${spring.sendgrid.api-key}")
+    private String sendgridApiKey;
 
-    public void sendAppointmentConfirmation(AppointmentMessage message) {
+    public void sendAppointmentConfirmation(AppointmentMessage message) {  // FIXED SIGNATURE
         try {
-            SimpleMailMessage email = new SimpleMailMessage();
-            email.setTo(message.getPatientEmail());
-            email.setSubject("Appointment Confirmation - Healthcare System");
-            email.setText(
-                    "Dear Patient,\n\n" +
-                            "Your appointment has been successfully booked!\n\n" +
-                            "Appointment Details:\n" +
-                            "Date & Time: " + message.getAppointmentDateTime() + "\n" +
-                            "Doctor: " + message.getDoctorEmail() + "\n" +
-                            "Reason: " + message.getReason() + "\n\n" +
-                            "Please arrive 10 minutes early.\n\n" +
-                            "Healthcare System"
+            Email from = new Email("noreply@healthcare.com");
+            Email to = new Email(message.getPatientEmail());
+            
+            Content content = new Content("text/plain", 
+                "Dear Patient,\n\n" +
+                "Your appointment has been successfully booked!\n\n" +
+                "Appointment Details:\n" +
+                "Date & Time: " + message.getAppointmentDateTime() + "\n" +
+                "Doctor: " + message.getDoctorEmail() + "\n" +
+                "Reason: " + message.getReason() + "\n\n" +
+                "Please arrive 10 minutes early.\n\n" +
+                "Healthcare System"
             );
-            mailSender.send(email);
-            log.info("Email sent to: {}", message.getPatientEmail());
+            
+            Mail mail = new Mail(from, "Appointment Confirmation - Healthcare System", to, content);
+            
+            SendGrid sg = new SendGrid(sendgridApiKey);
+            Request request = new Request();
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+            
+            Response response = sg.api(request);
+            log.info("✅ Email sent to: {} - Status: {}", message.getPatientEmail(), response.getStatusCode());
+            
         } catch (Exception e) {
-            log.error("Failed to send email: {}", e.getMessage());
+            log.error("Failed to send email to {}: {}", message.getPatientEmail(), e.getMessage());
         }
     }
 }
