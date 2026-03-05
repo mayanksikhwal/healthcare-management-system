@@ -40,7 +40,7 @@ function PatientDashboard() {
   const handleDoctorSelect = (e) => {
     const selectedDoctor = doctors.find(d => d.id === e.target.value);
     if (selectedDoctor) {
-      setForm({ ...form, doctorId: selectedDoctor.id, doctorEmail: selectedDoctor.email });
+      setForm({ ...form, doctorId: selectedDoctor.id, doctorEmail: selectedDoctor.email, doctorName: selectedDoctor.name });
     }
   };
 
@@ -54,6 +54,7 @@ function PatientDashboard() {
         patientEmail: user.email,
         doctorId: parseInt(form.doctorId),
         doctorEmail: form.doctorEmail,
+	doctorName: form.doctorName,
         appointmentDateTime: form.appointmentDateTime,
         reason: form.reason,
         notes: form.notes
