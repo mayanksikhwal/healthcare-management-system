@@ -5,6 +5,7 @@ import com.healthcare.appointmentservice.dto.*;
 import com.healthcare.appointmentservice.entity.Appointment;
 import com.healthcare.appointmentservice.enums.AppointmentStatus;
 import com.healthcare.appointmentservice.repository.AppointmentRepository;
+import com.healthcare.appointmentservice.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final DoctorRepository doctorRepository;
     // private final RabbitTemplate rabbitTemplate;
 
     public AppointmentResponse createAppointment(AppointmentRequest request) {
@@ -84,7 +86,9 @@ public class AppointmentService {
     }
 
     private AppointmentResponse mapToResponse(Appointment a) {
-	String doctorName = "Dr. " + a.getDoctorName();
+	String doctorName = "Dr. Unknown";
+    	doctorRepository.findByEmail(a.getDoctorEmail())
+        .ifPresent(doctor -> doctorName = doctor.getName());
         return AppointmentResponse.builder()
                 .id(a.getId())
                 .patientId(a.getPatientId())
