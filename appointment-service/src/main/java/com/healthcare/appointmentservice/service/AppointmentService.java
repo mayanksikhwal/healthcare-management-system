@@ -90,6 +90,7 @@ public class AppointmentService {
                 .patientEmail(a.getPatientEmail())
                 .doctorId(a.getDoctorId())
                 .doctorEmail(a.getDoctorEmail())
+		.doctorName(doctorName)
                 .appointmentDateTime(a.getAppointmentDateTime())
                 .reason(a.getReason())
                 .notes(a.getNotes())

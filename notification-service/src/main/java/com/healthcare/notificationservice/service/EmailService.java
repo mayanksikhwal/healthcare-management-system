@@ -18,7 +18,7 @@ public class EmailService {
 
     public void sendAppointmentConfirmation(AppointmentMessage message) {  // FIXED SIGNATURE
         try {
-            Email from = new Email("noreply@healthcare.com");
+            Email from = new Email("sikhwalmayank251@gmail.com");
             Email to = new Email(message.getPatientEmail());
             
             Content content = new Content("text/plain", 

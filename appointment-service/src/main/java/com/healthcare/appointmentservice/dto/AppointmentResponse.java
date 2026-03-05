@@ -13,10 +13,14 @@ public class AppointmentResponse {
     private Long patientId;
     private String patientEmail;
     private Long doctorId;
+    private String doctorName;
     private String doctorEmail;
     private LocalDateTime appointmentDateTime;
     private String reason;
     private String notes;
     private AppointmentStatus status;
     private LocalDateTime createdAt;
+
+    public String getDoctorName() { return doctorName; }
+    public void setDoctorName(String doctorName) { this.doctorName = doctorName; }
 }

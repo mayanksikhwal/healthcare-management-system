@@ -172,7 +172,7 @@ function PatientDashboard() {
                 <Typography variant="h6">Appointment #{apt.id}</Typography>
                 <Chip label={apt.status} color={getStatusColor(apt.status)} />
               </Box>
-              <Typography><strong>Doctor:</strong> Dr. {apt.doctorEmail.split('@')[0]}</Typography>
+              <Typography><strong>Doctor:</strong> Dr. {apt.doctorName}</Typography>
               <Typography><strong>Date:</strong> {new Date(apt.appointmentDateTime).toLocaleString()}</Typography>
               <Typography><strong>Reason:</strong> {apt.reason}</Typography>
               {apt.notes && <Typography color="text.secondary"><strong>Notes:</strong> {apt.notes}</Typography>}
