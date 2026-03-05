@@ -16,7 +16,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    private final RabbitTemplate rabbitTemplate;
+    // private final RabbitTemplate rabbitTemplate;
 
     public AppointmentResponse createAppointment(AppointmentRequest request) {
         Appointment appointment = Appointment.builder()
@@ -39,11 +39,11 @@ public class AppointmentService {
                 saved.getAppointmentDateTime(),
                 saved.getReason()
         );
-        rabbitTemplate.convertAndSend(
+        /* rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE,
                 RabbitMQConfig.ROUTING_KEY,
                 message
-        );
+        ); */
 
         return mapToResponse(appointmentRepository.save(appointment));
     }
