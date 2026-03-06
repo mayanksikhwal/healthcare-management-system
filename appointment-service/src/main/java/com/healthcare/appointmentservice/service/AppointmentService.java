@@ -10,13 +10,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-    // private final RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     public AppointmentResponse createAppointment(AppointmentRequest request) {
         Appointment appointment = Appointment.builder()
@@ -31,21 +32,46 @@ public class AppointmentService {
 
         Appointment saved = appointmentRepository.save(appointment);
 
+	RestTemplate restTemplate = new RestTemplate();  
+
         // Publish message to RabbitMQ
-        AppointmentMessage message = new AppointmentMessage(
+        /* AppointmentMessage message = new AppointmentMessage(
                 saved.getId(),
                 saved.getPatientEmail(),
                 saved.getDoctorEmail(),
                 saved.getAppointmentDateTime(),
                 saved.getReason()
-        );
-        /* rabbitTemplate.convertAndSend(
+        ); 
+        rabbitTemplate.convertAndSend(
                 RabbitMQConfig.EXCHANGE,
                 RabbitMQConfig.ROUTING_KEY,
                 message
         ); */
 
-        return mapToResponse(appointmentRepository.save(appointment));
+	        // DIRECT EMAIL - No RabbitMQ needed
+        try {
+            EmailRequest emailRequest = EmailRequest.builder()
+                .to(saved.getPatientEmail())
+                .subject("Appointment #" + saved.getId() + " Booked Successfully")
+                .body("Hello,\n\nYour appointment is booked with Dr. " + 
+      			saved.getDoctorEmail().split("@")[0] + 
+      			"\nDate: " + saved.getAppointmentDateTime() + 
+      			"\nReason: " + saved.getReason() + 
+      			"\n\nThank you!")
+                .build();
+            
+            restTemplate.postForObject(
+                "http://notification-service/api/notifications/email",
+                emailRequest,
+                String.class
+            );
+        } catch (Exception e) {
+            System.err.println("Email failed: " + e.getMessage());
+        }
+
+
+        // return mapToResponse(appointmentRepository.save(appointment));
+	return mapToResponse(saved);
     }
 
     public List<AppointmentResponse> getAllAppointments() {
