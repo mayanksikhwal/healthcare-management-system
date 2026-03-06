@@ -46,6 +46,8 @@ function PatientDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🚨 FORM DATA:", form);
+    alert("Form data: " + JSON.stringify(form));
     setError('');
     setMessage('');
     try {
