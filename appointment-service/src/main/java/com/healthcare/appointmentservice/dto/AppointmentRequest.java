@@ -23,6 +23,7 @@ public class AppointmentRequest {
     @Future(message = "Appointment must be in the future")
     private LocalDateTime appointmentDateTime;
 
+    private String doctorName;
     private String reason;
     private String notes;
 }

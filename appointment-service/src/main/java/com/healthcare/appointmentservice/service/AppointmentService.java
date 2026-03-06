@@ -58,19 +58,16 @@ public class AppointmentService {
 
 	        // DIRECT EMAIL - No RabbitMQ needed
         try {
-            EmailRequest emailRequest = EmailRequest.builder()
-                .to(saved.getPatientEmail())
-                .subject("Appointment #" + saved.getId() + " Booked Successfully")
-                .body("Hello,\n\nYour appointment is booked with Dr. " + 
-      			saved.getDoctorEmail().split("@")[0] + 
-      			"\nDate: " + saved.getAppointmentDateTime() + 
-      			"\nReason: " + saved.getReason() + 
-      			"\n\nThank you!")
-                .build();
-            
+            AppointmentMessage message = new AppointmentMessage(  // 👈 Use existing DTO
+    		saved.getId(),
+    		saved.getPatientEmail(),
+    		saved.getDoctorEmail(),
+    		saved.getAppointmentDateTime(),
+    		saved.getReason()
+		);            
             restTemplate.postForObject(
     		"https://healthcare-management-system-3-cpcw.onrender.com/api/notifications/email",
-    		emailRequest,
+    		message,
     		String.class
 		);
 
