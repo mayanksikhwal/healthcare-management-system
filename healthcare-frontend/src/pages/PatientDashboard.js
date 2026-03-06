@@ -51,6 +51,9 @@ function PatientDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formattedDateTime = form.appointmentDateTime 
+        ? form.appointmentDateTime.replace('T', ' ') 
+        : '';
     console.log("🚨 FORM DATA:", form);
     alert("Form data: " + JSON.stringify(form));
     setError('');
@@ -62,7 +65,7 @@ function PatientDashboard() {
         doctorId: parseInt(form.doctorId),
         doctorEmail: form.doctorEmail,
 	doctorName: form.doctorName,
-        appointmentDateTime: form.appointmentDateTime,
+        appointmentDateTime: formattedDateTime,
         reason: form.reason,
         notes: form.notes
       });
