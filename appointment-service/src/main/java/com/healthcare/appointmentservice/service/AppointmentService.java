@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final RabbitTemplate rabbitTemplate;
+    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     public AppointmentResponse createAppointment(AppointmentRequest request) {
         Appointment appointment = Appointment.builder()
@@ -34,10 +37,10 @@ public class AppointmentService {
 
 	RestTemplate restTemplate = new RestTemplate();  
 
-	System.out.println("🔍 DEBUG: Sending email to: " + saved.getPatientEmail());
-	System.out.println("🔍 DEBUG: Doctor email: " + saved.getDoctorEmail());
-	System.out.println("🔍 DEBUG: Appointment ID: " + saved.getId());
-	System.out.println("🔍 DEBUG: Calling notification-service...");
+	logger.info("🔍 DEBUG: Sending email to: {}", saved.getPatientEmail());
+	logger.info("🔍 DEBUG: Doctor email: {}", saved.getDoctorEmail());
+	logger.info("🔍 DEBUG: Appointment ID: {}", saved.getId());
+	logger.info("🔍 DEBUG: Calling notification-service...");
 
         // Publish message to RabbitMQ
         /* AppointmentMessage message = new AppointmentMessage(
@@ -66,13 +69,13 @@ public class AppointmentService {
                 .build();
             
             restTemplate.postForObject(
-                "http://notification-service/api/notifications/email",
-                emailRequest,
-                String.class
-            );
+    		"https://healthcare-management-system-3-cpcw.onrender.com/api/notifications/email",
+    		emailRequest,
+    		String.class
+		);
+
         } catch (Exception e) {
-    		System.err.println("🚨 EMAIL ERROR: " + e.getClass().getSimpleName() + " - " + e.getMessage());
-    		e.printStackTrace();  
+    		logger.error("🚨 EMAIL ERROR: {} - {}", e.getClass().getSimpleName(), e.getMessage());  
 		}
 
 
