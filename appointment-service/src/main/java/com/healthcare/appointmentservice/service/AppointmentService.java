@@ -34,6 +34,11 @@ public class AppointmentService {
 
 	RestTemplate restTemplate = new RestTemplate();  
 
+	System.out.println("🔍 DEBUG: Sending email to: " + saved.getPatientEmail());
+	System.out.println("🔍 DEBUG: Doctor email: " + saved.getDoctorEmail());
+	System.out.println("🔍 DEBUG: Appointment ID: " + saved.getId());
+	System.out.println("🔍 DEBUG: Calling notification-service...");
+
         // Publish message to RabbitMQ
         /* AppointmentMessage message = new AppointmentMessage(
                 saved.getId(),
@@ -66,8 +71,9 @@ public class AppointmentService {
                 String.class
             );
         } catch (Exception e) {
-            System.err.println("Email failed: " + e.getMessage());
-        }
+    		System.err.println("🚨 EMAIL ERROR: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+    		e.printStackTrace();  
+		}
 
 
         // return mapToResponse(appointmentRepository.save(appointment));
