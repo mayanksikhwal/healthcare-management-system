@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class AppointmentService {
                 saved.getId(),
                 saved.getPatientEmail(),
                 saved.getDoctorEmail(),
-                saved.getAppointmentDateTime(),
+                saved.getAppointmentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
                 saved.getReason()
         ); 
         rabbitTemplate.convertAndSend(
