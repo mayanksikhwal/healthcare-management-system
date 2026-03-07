@@ -6,14 +6,13 @@ import com.healthcare.appointmentservice.entity.Appointment;
 import com.healthcare.appointmentservice.enums.AppointmentStatus;
 import com.healthcare.appointmentservice.repository.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.format.DateTimeFormatter;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,49 +35,26 @@ public class AppointmentService {
 
         Appointment saved = appointmentRepository.save(appointment);
 
-	RestTemplate restTemplate = new RestTemplate();  
-
-	logger.info("🔍 DEBUG: Sending email to: {}", saved.getPatientEmail());
-	logger.info("🔍 DEBUG: Doctor email: {}", saved.getDoctorEmail());
-	logger.info("🔍 DEBUG: Appointment ID: {}", saved.getId());
-	logger.info("🔍 DEBUG: Calling notification-service...");
-
         // Publish message to RabbitMQ
-        /* AppointmentMessage message = new AppointmentMessage(
-                saved.getId(),
-                saved.getPatientEmail(),
-                saved.getDoctorEmail(),
-                saved.getAppointmentDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-                saved.getReason()
-        ); 
-        rabbitTemplate.convertAndSend(
-                RabbitMQConfig.EXCHANGE,
-                RabbitMQConfig.ROUTING_KEY,
-                message
-        ); */
-
-	        // DIRECT EMAIL - No RabbitMQ needed
         try {
-            AppointmentMessage message = new AppointmentMessage(  // 👈 Use existing DTO
-    		saved.getId(),
-    		saved.getPatientEmail(),
-    		saved.getDoctorEmail(),
-    		saved.getAppointmentDateTime(),
-    		saved.getReason()
-		);            
-            restTemplate.postForObject(
-    		"https://healthcare-management-system-3-cpcw.onrender.com/api/notifications/email",
-    		message,
-    		String.class
-		);
-
+            AppointmentMessage message = new AppointmentMessage(
+                    saved.getId(),
+                    saved.getPatientEmail(),
+                    saved.getDoctorEmail(),
+                    saved.getAppointmentDateTime(),
+                    saved.getReason()
+            );
+            rabbitTemplate.convertAndSend(
+                    RabbitMQConfig.EXCHANGE,
+                    RabbitMQConfig.ROUTING_KEY,
+                    message
+            );
+            logger.info("Message published to RabbitMQ for appointment: {}", saved.getId());
         } catch (Exception e) {
-    		logger.error("🚨 EMAIL ERROR: {} - {}", e.getClass().getSimpleName(), e.getMessage());  
-		}
+            logger.error("Failed to publish RabbitMQ message: {}", e.getMessage());
+        }
 
-
-        // return mapToResponse(appointmentRepository.save(appointment));
-	return mapToResponse(saved);
+        return mapToResponse(saved);
     }
 
     public List<AppointmentResponse> getAllAppointments() {
@@ -123,7 +99,7 @@ public class AppointmentService {
                 .patientEmail(a.getPatientEmail())
                 .doctorId(a.getDoctorId())
                 .doctorEmail(a.getDoctorEmail())
-		.doctorName(a.getDoctorEmail().split("@")[0])
+                .doctorName(a.getDoctorEmail().split("@")[0])
                 .appointmentDateTime(a.getAppointmentDateTime())
                 .reason(a.getReason())
                 .notes(a.getNotes())
