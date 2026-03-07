@@ -8,7 +8,7 @@ function PatientDashboard() {
   const user = JSON.parse(localStorage.getItem('user'));
   const [appointments, setAppointments] = useState([]);
   const [doctors, setDoctors] = useState([]);
-  const [form, setForm] = useState({ doctorId: '', doctorEmail: '', appointmentDateTime: '', reason: '', notes: '' });
+  const [form, setForm] = useState({ doctorId: '', doctorEmail: '', doctorName: '', appointmentDateTime: '', reason: '', notes: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
@@ -40,22 +40,17 @@ function PatientDashboard() {
   const handleDoctorSelect = (e) => {
     const selectedDoctor = doctors.find(d => d.id === e.target.value);
     if (selectedDoctor) {
-      setForm({ 
-	...form, 
-	doctorId: selectedDoctor.id, 
-	doctorEmail: selectedDoctor.email, 
-	doctorName: selectedDoctor.name
-	 });
+      setForm({
+        ...form,
+        doctorId: selectedDoctor.id,
+        doctorEmail: selectedDoctor.email,
+        doctorName: selectedDoctor.name
+      });
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formattedDateTime = form.appointmentDateTime 
-        ? form.appointmentDateTime.replace('T', ' ') 
-        : '';
-    console.log("🚨 FORM DATA:", form);
-    alert("Form data: " + JSON.stringify(form));
     setError('');
     setMessage('');
     try {
@@ -64,13 +59,13 @@ function PatientDashboard() {
         patientEmail: user.email,
         doctorId: parseInt(form.doctorId),
         doctorEmail: form.doctorEmail,
-	doctorName: form.doctorName,
-        appointmentDateTime: formattedDateTime,
+        doctorName: form.doctorName,
+        appointmentDateTime: form.appointmentDateTime,
         reason: form.reason,
         notes: form.notes
       });
       setMessage('Appointment booked successfully!');
-      setForm({ doctorId: '', doctorEmail: '', appointmentDateTime: '', reason: '', notes: '' });
+      setForm({ doctorId: '', doctorEmail: '', doctorName: '', appointmentDateTime: '', reason: '', notes: '' });
       loadAppointments();
     } catch (err) {
       setError('Failed to book appointment');
@@ -130,12 +125,6 @@ function PatientDashboard() {
               )}
             </Select>
           </FormControl>
-	  
-	  {
-	  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-  	  	Debug: {JSON.stringify({doctorId: form.doctorId, doctorEmail: form.doctorEmail, doctorName: form.doctorName})}
-	  </Typography>
-	  }
 
           <TextField
             fullWidth
