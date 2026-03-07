@@ -20,7 +20,6 @@ public class AppointmentRequest {
     private String doctorEmail;
 
     @NotNull(message = "Appointment date/time is required")
-    @Future(message = "Appointment must be in the future")
     private LocalDateTime appointmentDateTime;
 
     private String doctorName;
