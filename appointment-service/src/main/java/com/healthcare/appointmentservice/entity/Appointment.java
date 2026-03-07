@@ -29,6 +29,8 @@ public class Appointment {
     @Column(nullable = false)
     private String doctorEmail;
 
+    private String doctorName;
+
     @Column(nullable = false)
     private LocalDateTime appointmentDateTime;
 
